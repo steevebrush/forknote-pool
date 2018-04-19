@@ -2,3 +2,17 @@ node_modules/
 .idea/
 config.json
 logs/
+.DS_Store
+build
+.vs
+CMakeFiles.txt.user
+*.dir
+*.vcxproj
+*.filters
+/tags
+.idea
+.ycm_extra_conf.py
+.ycm_extra_conf.pyc
+Release
+Debug
+npm-debug.log

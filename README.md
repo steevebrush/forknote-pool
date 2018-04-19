@@ -1,9 +1,7 @@
-cryptonote-forknote-pool
+iridium-pool
 ====================
 
-**NOTICE:  If you have problems with orphan blocks, read this first:
-https://github.com/forknote/forknote-pool/issues/48**
-
+Formerly known as cryptonote-forknote-pool, forked from Forknote Project.
 
 High performance Node.js (with native C addons) mining pool for Cryptonote based coins, created with the Forknote software such as Bytecoin, Dashcoin, etc..
 
@@ -119,12 +117,17 @@ sudo apt-get install git build-essential redis-server libboost1.55-all-dev nodej
 #### 1) Downloading & Installing
 
 
-Clone the repository and run `npm update` for all the dependencies to be installed:
+Clone the repository and run `npm up date` for all the dependencies to be installed:
 
 ```bash
-git clone https://github.com/forknote/cryptonote-universal-pool.git pool
-cd pool
-npm update
+$ git clone https://github.com/iridiumdev/iridium-pool.git
+$ cd pool
+$ npm update
+```
+
+if you get the error then disable strict ssl verification  :
+```bash
+$ npm config set strict-ssl false
 ```
 
 #### 2) Configuration
@@ -136,13 +139,13 @@ Explanation for each field:
 "coin": "dashcoin",
 
 /* Used for front-end display */
-"symbol": "DSH",
+"symbol": "IRD",
 
 /* Minimum units in a single coin, see COIN constant in DAEMON_CODE/src/cryptonote_config.h */
-"coinUnits": 1000000000000,
+"coinUnits": 100000000,
 
 /* Coin network time to mine one block, see DIFFICULTY_TARGET constant in DAEMON_CODE/src/cryptonote_config.h */
-"coinDifficultyTarget": 120,
+"coinDifficultyTarget": 175,
 
 "logging": {
 
@@ -178,7 +181,7 @@ Explanation for each field:
     "clusterForks": "auto",
 
     /* Address where block rewards go, and miner payments come from. */
-    "poolAddress": "D6WLtrV1SBWV8HWQzQv8uuYuGy3uwZ8ah5iT5HovSqhTKMauquoTsKP8RBJzVqVesX87poYWQgkGWB4NWHJ6Ravv93v4BaE"
+    "poolAddress": "ir3Dp7UJNr4igTCmSxcknJ1R5XaEo9msaM5R92wYxV8Bd4qXxoZBBeFicNHv5m2iU42KQ1tkhteHzV1QYLr4RovA2pDuqpa3M"
 
     /* Poll RPC daemons for new blocks every this many milliseconds. */
     "blockRefreshInterval": 1000,
@@ -189,7 +192,7 @@ Explanation for each field:
     "ports": [
         {
             "port": 3333, //Port for mining apps to connect to
-            "difficulty": 100, //Initial difficulty miners are set to
+            "difficulty": 500, //Initial difficulty miners are set to
             "desc": "Low end hardware" //Description of port
         },
         {
@@ -201,6 +204,12 @@ Explanation for each field:
             "port": 7777,
             "difficulty": 10000,
             "desc": "High end hardware"
+        },
+        {
+          "port": 8888,
+          "sslPort": 8899,
+          "difficulty": 600000,
+          "desc": "Big hashrate / NH"
         }
     ],
 
@@ -208,19 +217,19 @@ Explanation for each field:
        individual miners based on their hashrate in order to lower networking and CPU
        overhead. */
     "varDiff": {
-        "minDiff": 2, //Minimum difficulty
-        "maxDiff": 100000,
-        "targetTime": 100, //Try to get 1 share per this many seconds
-        "retargetTime": 30, //Check to see if we should retarget every this many seconds
+        "minDiff": 500, //Minimum difficulty
+        "maxDiff": 500000,
+        "targetTime": 30, //Try to get 1 share per this many seconds
+        "retargetTime": 60, //Check to see if we should retarget every this many seconds
         "variancePercent": 30, //Allow time to very this % from target without retargeting
-        "maxJump": 100 //Limit diff percent increase/decrease in a single retargetting
+        "maxJump": 100 //Limit diff percent increase/decrease in a single retargeting
     },
 
-    /* Set difficulty on miner client side by passing <address> param with .<difficulty> postfix
-       minerd -u D3z2DDWygoZU4NniCNa4oMjjKi45dC2KHUWUyD1RZ1pfgnRgcHdfLVQgh5gmRv4jwEjCX5LoLERAf5PbjLS43Rkd8vFUM1m.5000 */
+    /* Set difficulty on miner client side by passing address param with .difficulty postfix
+       minerd -u ir3Dp7UJNr4igTCmSxcknJ1R5XaEo9msaM5R92wYxV8Bd4qXxoZBBeFicNHv5m2iU42KQ1tkhteHzV1QYLr4RovA2pDuqpa3M.5000 */
     "fixedDiff": {
         "enabled": true,
-        "separator": ".", // character separator between <address> and <difficulty>
+        "separator": ".", // character separator between address and difficulty
     },
 
     /* Feature to trust share difficulties from miners which can
@@ -254,13 +263,13 @@ Explanation for each field:
 /* Module that sends payments to miners according to their submitted shares. */
 "payments": {
     "enabled": true,
-    "interval": 600, //how often to run in seconds
-    "maxAddresses": 50, //split up payments if sending to more than this many addresses
-    "mixin": 3, //number of transactions yours is indistinguishable from
-    "transferFee": 5000000000, //fee to pay for each transaction
-    "minPayment": 100000000000, //miner balance required before sending payment
-    "maxTransactionAmount": 0, //split transactions by this amount(to prevent "too big transaction" error)
-    "denomination": 100000000000 //truncate to this precision and store remainder
+    "interval": 900, //how often to run in seconds
+    "maxAddresses": 10, //split up payments if sending to more than this many addresses
+    "mixin": 2, //number of transactions yours is indistinguishable from
+    "transferFee": 50000, //fee to pay for each transaction
+    "minPayment": 1000000000, //miner balance required before sending payment
+    "maxTransactionAmount": 50000000000, //split transactions by this amount(to prevent "too big transaction" error)
+    "denomination": 1000000 //truncate to this precision and store remainder
 },
 
 /* Module that monitors the submitted block maturities and manages rounds. Confirmed
@@ -268,40 +277,40 @@ Explanation for each field:
    to their shares. */
 "blockUnlocker": {
     "enabled": true,
-    "interval": 30, //how often to check block statuses in seconds
+    "interval": 180, //how often to check block statuses in seconds
 
     /* Block depth required for a block to unlocked/mature. Found in daemon source as
        the variable CRYPTONOTE_MINED_MONEY_UNLOCK_WINDOW */
-    "depth": 60,
-    "poolFee": 1.8, //1.8% pool fee (2% total fee total including donations)
-    "devDonation": 0.1, //0.1% donation to send to pool dev - only works with Monero
-    "coreDevDonation": 0.1 //0.1% donation to send to core devs - works with Bytecoin, Monero, Dashcoin, QuarazCoin, Fantoncoin, AEON and OneEvilCoin
+    "depth": 20,
+    "poolFee": 1, //1% pool fee (2% total fee total including donations)
+    "devDonation": 0.5, //0.5% donation to send to pool dev
+    "coreDevDonation": 0.5 //0.5% donation to send to core devs
 },
 
 /* AJAX API used for front-end website. */
 "api": {
     "enabled": true,
-    "hashrateWindow": 600, //how many second worth of shares used to estimate hash rate
-    "updateInterval": 3, //gather stats and broadcast every this many seconds
+    "hashrateWindow": 300, //how many second worth of shares used to estimate hash rate
+    "updateInterval": 30, //gather stats and broadcast every this many seconds
     "port": 8117,
-    "blocks": 30, //amount of blocks to send at a time
-    "payments": 30, //amount of payments to send at a time
+    "blocks": 20, //amount of blocks to send at a time
+    "payments": 20, //amount of payments to send at a time
     "password": "test" //password required for admin stats
 },
 
-/* Coin daemon connection details. */
+/* Iridium RPC daemon connection details. */
 "daemon": {
     "host": "127.0.0.1",
-    "port": 29081
+    "port": 13007
 },
 
-/* Wallet daemon connection details. */
+/* iridium_simplewallet RPC daemon connection details. */
 "wallet": {
     "host": "127.0.0.1",
-    "port": 29082
+    "port": 13008
 },
 
-/* Redis connection into. */
+/* Redis connection info. */
 "redis": {
     "host": "127.0.0.1",
     "port": 6379
@@ -367,7 +376,7 @@ Explanation for each field:
 
 #### 3) [Optional] Configure cryptonote-easy-miner for your pool
 Your miners that are Windows users can use [cryptonote-easy-miner](https://github.com/zone117x/cryptonote-easy-miner)
-which will automatically generate their wallet address and stratup multiple threads of simpleminer. You can download
+which will automatically generate their wallet address and startup multiple threads of simpleminer. You can download
 it and edit the `config.ini` file to point to your own pool.
 Inside the `easyminer` folder, edit `config.init` to point to your pool details
 ```ini
@@ -467,29 +476,26 @@ the Node.js modules, and any config files that may have been changed.
 
 ### Setting up Testnet
 
-No cryptonote based coins have a testnet mode (yet) but you can effectively create a testnet with the following steps:
 
-* Open `/src/p2p/net_node.inl` and remove lines with `ADD_HARDCODED_SEED_NODE` to prevent it from connecting to mainnet (Monero example: http://git.io/0a12_Q)
-* Build the coin from source
-* You now need to run two instance of the daemon and connect them to each other (without a connection to another instance the daemon will not accept RPC requests)
-  * Run first instance with `./forknoted --p2p-bind-port 28080 --allow-local-ip`
-  * Run second instance with `./forknoted --p2p-bind-port 5011 --rpc-bind-port 5010 --add-peer 0.0.0.0:28080 --allow-local-ip`
-* You should now have a local testnet setup. The ports can be changes as long as the second instance is pointed to the first instance, obviously
 
-*Credit to surfer43 for these instructions*
-
+* Start iridiumd in testnet mode
+* Start iridium_simplewallet in testnet mode (no RPC yet)
+* Create a "testnet wallet" with a password and use it in your pool config.json
+* Restart iridium_simplewallet in RPC mode with the wallet created before
+* You should now have a local testnet setup. The ports can be changes.
 
 ### JSON-RPC Commands from CLI
 
-Documentation for JSON-RPC commands can be found here:
-* Daemon https://wiki.bytecoin.org/wiki/Daemon_JSON_RPC_API
-* Wallet https://wiki.bytecoin.org/wiki/Bytecoin_RPC_Wallet_API
+Documentation for JSON-RPC commands can be found here (some parts still to do):
+* https://wiki.ird.cash/home
+* Daemon https://wiki.ird.cash/iridiumd
+* Wallet https://wiki.ird.cash/iridium_simplewallet
 
 
 Curl can be used to use the JSON-RPC commands from command-line. Here is an example of calling `getblockheaderbyheight` for block 100:
 
 ```bash
-curl 127.0.0.1:18081/json_rpc -d '{"method":"getblockheaderbyheight","params":{"height":100}}'
+curl 127.0.0.1:13007/json_rpc -d '{"method":"getblockheaderbyheight","params":{"height":100}}'
 ```
 
 
@@ -507,8 +513,7 @@ You need the latest stable version of Forknote for the blockchain explorer - [fo
 
 ```
 rpc-bind-ip=0.0.0.0
-enable-blockexplorer=1
-enable-cors=*
+
 ```
 
 * Launch forknoted with the corresponding config file
